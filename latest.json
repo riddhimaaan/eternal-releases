@@ -1,6 +1,6 @@
 {
   "version": "0.17.0",
-  "downloadUrl": "https://github.com/riddhimaaan/eternal-releases/releases",
+  "downloadUrl": "https://docs.google.com/document/d/1pdmd5fcKM3XedslnuO0ixf9xi5TXaAiNUuRETTPSOcE/view",
   "notes": [
     "Eternal now opens correctly on Ubuntu and Debian.",
     "Updated the app framework to close two security advisories."
