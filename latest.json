@@ -1,0 +1,8 @@
+{
+  "version": "0.17.0",
+  "downloadUrl": "https://github.com/riddhimaaan/eternal-releases/releases",
+  "notes": [
+    "Eternal now opens correctly on Ubuntu and Debian.",
+    "Updated the app framework to close two security advisories."
+  ]
+}
