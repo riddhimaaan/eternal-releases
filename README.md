@@ -22,6 +22,29 @@ to find out whether a newer version has been published.
 | `downloadUrl` | no | Where a customer goes to get it. **Must start with `https://`** — the app refuses any other kind of link. Leave it out and the app sends people to this repo's Releases page. |
 | `notes` | no | Short changelog lines. Up to 40, shown as bullet points. |
 
+## Running Eternal in a container
+
+`docker-compose.yml` in this repository runs Eternal without installing
+anything on the host beyond Docker itself.
+
+```bash
+curl -O https://raw.githubusercontent.com/riddhimaaan/eternal-releases/main/docker-compose.yml
+docker login ghcr.io -u YOUR-GITHUB-USERNAME
+ETERNAL_UID=$(id -u) ETERNAL_GID=$(id -g) docker compose up -d
+```
+
+The image is published privately at `ghcr.io/riddhimaaan/eternal`. `docker
+login` needs a GitHub token with access to it, which comes with your licence —
+if the pull is refused, your access has not been granted or has lapsed.
+
+Your data lives in `~/.eternal` on the host, so updates never touch it:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+The dashboard is then at http://127.0.0.1:9119, bound to this machine only.
+
 ## Publishing a new version
 
 1. Build the new version of the app.

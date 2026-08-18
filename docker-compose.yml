@@ -1,0 +1,60 @@
+#
+# Eternal — run it as a container
+#
+# One-time sign-in. The image is private, so Docker needs a GitHub token that
+# has been granted access to it (that access comes with your licence):
+#
+#   docker login ghcr.io -u YOUR-GITHUB-USERNAME
+#
+# Then, from the folder holding this file:
+#
+#   ETERNAL_UID=$(id -u) ETERNAL_GID=$(id -g) docker compose up -d
+#
+# Eternal keeps everything — settings, chats, credentials — in ~/.eternal on
+# this machine. Updating replaces the container, never that folder:
+#
+#   docker compose pull && docker compose up -d
+#
+# To watch it start, or to see why it did not:
+#
+#   docker compose logs -f
+#
+# ETERNAL_UID / ETERNAL_GID hand the container your own user id, so files it
+# writes into ~/.eternal stay yours and not root's. Omit them and the container
+# writes as an internal user (10000) whose files you may not be able to edit.
+#
+services:
+  gateway:
+    image: ghcr.io/riddhimaaan/eternal:latest
+    container_name: eternal
+    restart: unless-stopped
+    # Host networking so the agent can reach services already running on this
+    # machine (a local model server, a database) at 127.0.0.1, exactly as it
+    # would if you had installed Eternal directly. Linux only — on Docker
+    # Desktop for macOS or Windows, replace with an explicit `ports:` mapping.
+    network_mode: host
+    volumes:
+      - ~/.eternal:/opt/data
+    environment:
+      - ETERNAL_UID=${ETERNAL_UID:-10000}
+      - ETERNAL_GID=${ETERNAL_GID:-10000}
+    command: ["gateway", "run"]
+
+  # The web dashboard, at http://127.0.0.1:9119
+  dashboard:
+    image: ghcr.io/riddhimaaan/eternal:latest
+    container_name: eternal-dashboard
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - gateway
+    volumes:
+      - ~/.eternal:/opt/data
+    environment:
+      - ETERNAL_UID=${ETERNAL_UID:-10000}
+      - ETERNAL_GID=${ETERNAL_GID:-10000}
+    # Bound to 127.0.0.1 deliberately: the dashboard holds your API keys and has
+    # no login of its own. To reach it from another machine, forward the port
+    # over SSH (`ssh -L 9119:localhost:9119 you@this-host`) rather than opening
+    # it to the network.
+    command: ["dashboard", "--host", "127.0.0.1", "--no-open"]
